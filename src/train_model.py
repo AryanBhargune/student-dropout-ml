@@ -1,6 +1,7 @@
 from src.preprocess import preprocess_data
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
 import joblib
 import os
@@ -12,42 +13,47 @@ os.makedirs(MODEL_DIR, exist_ok=True)
 def train_models():
     X_train, X_test, y_train, y_test = preprocess_data()
 
-    # Initialize models
-    logistic_model = LogisticRegression(max_iter=1000)
+    # Models
+    log_model = LogisticRegression(max_iter=1000)
     rf_model = RandomForestClassifier()
+    dt_model = DecisionTreeClassifier()
 
-    # Train models
-    logistic_model.fit(X_train, y_train)
+    # Train
+    log_model.fit(X_train, y_train)
     rf_model.fit(X_train, y_train)
+    dt_model.fit(X_train, y_train)
 
-    # Predictions
-    log_pred = logistic_model.predict(X_test)
+    # Predict
+    log_pred = log_model.predict(X_test)
     rf_pred = rf_model.predict(X_test)
+    dt_pred = dt_model.predict(X_test)
 
-    # Accuracy comparison
+    # Accuracy
     log_acc = accuracy_score(y_test, log_pred)
     rf_acc = accuracy_score(y_test, rf_pred)
+    dt_acc = accuracy_score(y_test, dt_pred)
 
-    print("Model Performance Comparison")
-    print("-----------------------------")
-    print(f"Logistic Regression Accuracy: {log_acc:.4f}")
-    print(f"Random Forest Accuracy: {rf_acc:.4f}")
+    print("Model Comparison")
+    print("----------------")
+    print(f"Logistic Regression: {log_acc:.4f}")
+    print(f"Random Forest      : {rf_acc:.4f}")
+    print(f"Decision Tree      : {dt_acc:.4f}")
 
     # Select best model
-    if rf_acc > log_acc:
-        best_model = rf_model
-        best_name = "Random Forest"
-    else:
-        best_model = logistic_model
-        best_name = "Logistic Regression"
+    models = {
+        "Logistic Regression": (log_model, log_acc),
+        "Random Forest": (rf_model, rf_acc),
+        "Decision Tree": (dt_model, dt_acc)
+    }
+
+    best_name = max(models, key=lambda x: models[x][1])
+    best_model = models[best_name][0]
 
     print(f"\nBest Model Selected: {best_name}")
 
     # Save best model
     joblib.dump(best_model, os.path.join(MODEL_DIR, "dropout_model.pkl"))
     print("Best model saved successfully.")
-
-    return best_model
 
 
 if __name__ == "__main__":

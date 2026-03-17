@@ -1,6 +1,7 @@
 from src.preprocess import preprocess_data
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
 
@@ -9,7 +10,8 @@ def evaluate_models():
 
     models = {
         "Logistic Regression": LogisticRegression(max_iter=1000),
-        "Random Forest": RandomForestClassifier()
+        "Random Forest": RandomForestClassifier(),
+        "Decision Tree": DecisionTreeClassifier()
     }
 
     for name, model in models.items():
